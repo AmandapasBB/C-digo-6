@@ -1,0 +1,16 @@
+{
+  "name": "apifilmesdeterror",
+  "version": "1.0.0",
+  "description": "Api com filmes de terror.",
+  "license": "ISC",
+  "author": "Amanda Alves",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "mongoose": "^8.12.1"
+  }
+}
