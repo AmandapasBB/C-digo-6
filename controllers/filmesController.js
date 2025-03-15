@@ -30,29 +30,52 @@ exports.buscarFilmePorId = async (req, res) => {
 // ✅ Filtrar filmes por múltiplas tags
 exports.filtrarFilmes = async (req, res) => {
   try {
-    const { subgenero, ambiente, acontecimento, periodo, quantidade } =
-      req.query;
-    let filtro = {};
+    const { subgenero, ambiente, acontecimento, periodo } = req.query;
+    let filtros = {};
 
-    if (subgenero) filtro.subgenero = subgenero;
-    if (ambiente) filtro.ambiente = ambiente;
-    if (acontecimento) filtro.acontecimento = acontecimento;
-    if (periodo) filtro.periodo = periodo;
-    if (quantidade) filtro.quantidade = quantidade;
+    // 🔹 Adiciona apenas os filtros que foram preenchidos
+    if (subgenero && subgenero !== "")
+      filtros.subgenero = { $regex: subgenero, $options: "i" };
+    if (ambiente && ambiente !== "")
+      filtros.ambiente = { $regex: ambiente, $options: "i" };
+    if (acontecimento && acontecimento !== "")
+      filtros.acontecimento = { $regex: acontecimento, $options: "i" };
+    if (periodo && periodo !== "")
+      filtros.periodo = { $regex: periodo, $options: "i" };
 
-    const filmes = await Filme.find(filtro);
+    console.log("🔎 Filtros recebidos:", filtros); // Verifica os filtros que foram aplicados
 
-    if (filmes.length === 0) {
-      return res
-        .status(404)
-        .json({ mensagem: "Nenhum filme encontrado com essas tags" });
+    let filmes;
+
+    // Se não bateu, retorna todos os filmes
+    if (Object.keys(filtros).length === 0) {
+      console.log("⚠ Nenhum filtro foi enviado. Retornando todos os filmes.");
+      filmes = await Filme.find();
+    } else {
+      //  Busca os filmes de acordo com os filtros 
+      filmes = await Filme.find(filtros);
+
+      //  Se não acha, tenta com menos filtros
+      if (filmes.length === 0) {
+        console.log(
+          "⚠ Nenhum filme encontrado com todos os filtros. Tentando com pelo menos um..."
+        );
+
+        const chaves = Object.keys(filtros);
+        if (chaves.length > 0) {
+          let filtroMenosRestrito = {};
+          filtroMenosRestrito[chaves[0]] = filtros[chaves[0]];
+          filmes = await Filme.find(filtroMenosRestrito);
+        }
+      }
     }
 
     res.json(filmes);
   } catch (error) {
+    console.error("❌ Erro ao buscar os filmes:", error);
     res
       .status(400)
-      .json({ erro: "Erro ao buscar os filmes", detalhes: error.message });
+      .json({ erro: "Erro ao buscar o filme", detalhes: error.message });
   }
 };
 
