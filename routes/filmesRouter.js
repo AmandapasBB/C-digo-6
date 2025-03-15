@@ -9,8 +9,8 @@ router.get("/", (req, res) => {
 
 // ✅ Rotas principais
 router.get("/filmes", filmesController.listarFilmes);
-router.get("/filmes/:id", filmesController.buscarFilmePorId);
 router.get("/filmes/filtro-multiplas", filmesController.filtrarFilmes);
+router.get("/filmes/:id", filmesController.buscarFilmePorId);
 router.post("/filmes", filmesController.criarFilme);
 router.put("/filmes/:id", filmesController.atualizarFilme);
 router.delete("/filmes/:id", filmesController.deletarFilme);
